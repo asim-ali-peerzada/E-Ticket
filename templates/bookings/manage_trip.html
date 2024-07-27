@@ -1,0 +1,139 @@
+{% extends "base/base.html" %} {% block head %} | Manage Trips{% endblock head %} <br />
+
+{% block base %}
+
+
+<body>
+  <section style="background-color: white; padding-left:50px; padding-right:50px;">
+    <h1>All Trips</h1>
+    <input
+      type="text"
+      id="searchInput"
+      oninput="searchTable()"
+      placeholder="Search Departure City..."
+    />
+    <table id="tripTable">
+      <thead>
+        <tr>
+          <th>Departure</th>
+          <th>Departure Time</th>
+          <th>Destination</th>
+          <th>Arrival Time</th>
+          <th>Bus</th>
+          <th>Fare</th>
+          <th>Total Seats</th>
+          <th>Available Seats</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for trip in trips %}
+        <tr {% if trip.departure_datetime.date == today %}style="background-color: lightblue; "{% endif %}>
+
+          <td>{{ trip.departure }}</td>
+          <td>{{ trip.departure_datetime}}</td>
+          <td>{{ trip.destination }}</td>
+          <td>{{ trip.arrival_datetime}}</td>
+          <td>{{ trip.bus }}</td>
+          <td>{{ trip.fare }}</td>
+          <td>{{ trip.total_seats }}</td>
+          <td>{{ trip.available_seats }}</td>
+          <td>
+            <a href="{% url 'update_trip' trip.id %}" class="update-link"
+              >Update</a
+            >
+            <a
+              href="{% url 'trip_detail' trip_id=trip.id %}"
+              class="details-link"
+              >View Details</a
+            >
+            <a href="{% url 'delete_trip' trip.id %}" class="delete-link"
+              >Delete</a
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div id="pagination-controls">
+      <!-- Pagination controls will be added here -->
+    </div>
+
+  </section>
+  <section style="background-color: #eeeeee">
+    <h1>Add a New Trip</h1>
+    <form method="post" class="trip-form">
+      {% csrf_token %} {{ form.as_p }}
+      <button type="submit">Create Trip</button>
+    </form>
+  </section>
+
+  <script>
+    function searchTable() {
+      // Declare variables
+      var input, filter, table, tbody, tr, td, i, txtValue;
+      input = document.getElementById("searchInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("tripTable"); // Corrected id
+      tbody = table.getElementsByTagName("tbody")[0];
+
+      tr = tbody.getElementsByTagName("tr");
+
+      // Loop through all table rows and hide those that don't match the search query in the "Departure" column
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0]; // Select the first (index 0) column (Departure)
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+
+          // Toggle the display of the row based on whether it matches the search query
+          tr[i].style.display =
+            txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+        }
+      }
+    }
+  </script>
+  <script>
+        // Function to display a subset of rows based on the current page
+    function displayPage(pageNumber) {
+      var rows = document.querySelectorAll("#tripTable tbody tr");
+      var itemsPerPage = 10; // Number of items to display per page
+      var startIndex = (pageNumber - 1) * itemsPerPage;
+      var endIndex = startIndex + itemsPerPage;
+
+      for (var i = 0; i < rows.length; i++) {
+        if (i >= startIndex && i < endIndex) {
+          rows[i].style.display = "";
+        } else {
+          rows[i].style.display = "none";
+        }
+      }
+    }
+
+    // Function to generate pagination controls
+    function generatePaginationControls(totalPages) {
+      var paginationControls = document.getElementById("pagination-controls");
+      paginationControls.innerHTML = "";
+
+      for (var i = 1; i <= totalPages; i++) {
+        var button = document.createElement("button");
+        button.className ='page-button'
+        button.textContent = i;
+        button.addEventListener("click", function () {
+          displayPage(parseInt(this.textContent));
+        });
+        paginationControls.appendChild(button);
+      }
+    }
+
+    // Call displayPage initially to show the first page
+    displayPage(1);
+
+    // Call generatePaginationControls to create initial pagination controls
+    var totalTrips = document.querySelectorAll("#tripTable tbody tr").length;
+    var totalPages = Math.ceil(totalTrips / 10); // Assuming 10 items per page
+    generatePaginationControls(totalPages);
+
+  </script>
+</body>
+{% endblock base %}

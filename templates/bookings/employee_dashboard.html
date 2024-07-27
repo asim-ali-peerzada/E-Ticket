@@ -1,0 +1,15 @@
+<h2>Welcome, {{ first_name }}!</h2>
+
+<h3>Past Trips</h3>
+<ul>
+  <li>
+    Trip: {{ trip.departure }} to {{ trip.destination }} <br />
+    Reservations: {% for reservation in reservations %}
+    <td>{{ reservation.first_name }}</td>
+    <td>{{ reservation.selected_seats }}</td>
+    <td>{{ reservation.date_created }}</td>
+    <td>{{ reservation.date_updated }}</td>
+    <td>{{ reservation.reservation_number }}</td>
+    {% endfor %}
+  </li>
+</ul>

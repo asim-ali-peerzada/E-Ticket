@@ -1,0 +1,335 @@
+{% extends "base/base.html" %} {% block base %}
+{% block extension %}
+
+{% endblock extension %}
+<div class="terminals" id="terminals">
+  <div class="content">
+      <h2> Our Terminals</h2>
+      <div class="slider">
+        <div class="list">
+            <div class="item">
+                <img src="/static/terminals/1.jpg" alt="">
+            </div>
+            <div class="item">
+                <img src="/static/terminals/2.jpg" alt="">
+            </div>
+            <div class="item">
+                <img src="/static/terminals/3.jpg" alt="">
+            </div>
+            <div class="item">
+                <img src="/static/terminals/4.jpg" alt="">
+            </div>
+            <div class="item">
+                <img src="/static/terminals/5.jpg" alt="">
+            </div>
+        </div>
+        <div class="buttons">
+            <button id="prev"><</button>
+            <button id="next">></button>
+        </div>
+        <ul class="dots">
+          <li class="active"></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+      </div>
+  </div>
+</div>
+
+
+{% comment %} About US  {% endcomment %}
+
+<div class="about-container" id="about-us">
+  <h2>About Us</h2>
+  <div class="about-us">
+    <div class="wrapper">
+      <i id="left" class="fa-solid fa-angle-left"></i>
+      <ul class="carousel">
+        <li class="card">
+          <div class="img"><img src="/static/about/img-1.jpg" alt="img" draggable="false"></div>
+          <h2>Blanche Pearson</h2>
+          <span>Sales Manager</span>
+        </li>
+        <li class="card">
+          <div class="img"><img src="/static/about/img-2.jpg" alt="img" draggable="false"></div>
+          <h2>Joenas Brauers</h2>
+          <span>Web Developer</span>
+        </li>
+        <li class="card">
+          <div class="img"><img src="/static/about/img-3.jpg" alt="img" draggable="false"></div>
+          <h2>Lariach French</h2>
+          <span>Online Teacher</span>
+        </li>
+        <li class="card">
+          <div class="img"><img src="/static/about/img-4.jpg" alt="img" draggable="false"></div>
+          <h2>James Khosravi</h2>
+          <span>Freelancer</span>
+        </li>
+        <li class="card">
+          <div class="img"><img src="/static/about/img-5.jpg" alt="img" draggable="false"></div>
+          <h2>Kristina Zasiadko</h2>
+          <span>Bank Manager</span>
+        </li>
+        <li class="card">
+          <div class="img"><img src="/static/about/img-6.jpg" alt="img" draggable="false"></div>
+          <h2>Donald Horton</h2>
+          <span>App Designer</span>
+        </li>
+      </ul>
+      <i id="right" class="fa-solid fa-angle-right"></i>
+    </div>
+  </div>
+</div>
+
+
+
+{% comment %} Contact us {% endcomment %}
+
+
+<div class="contact-container" id="contact-us">
+  <div class="contact-box">
+    <div class="left"></div>
+    <div class="right">
+      <h2>Contact Us</h2>
+        <form id="contact-form" method="post" action="{% url 'home' %}">
+            {% csrf_token %}
+            <input type="text" name="name" class="field" placeholder="Your Name">
+            <input type="email" name="email" class="field" placeholder="Your Email">
+            <input type="phone" name="phone" class="field" placeholder="Your Phone">
+            <textarea name="desc" placeholder="Message" class="field"></textarea>
+            <button type="submit" class="contact-btn">Send</button>
+        </form>
+    </div>             
+  </div>
+</div> 
+
+
+
+<!-- Footer -->
+
+<div class="footer">
+    <div class="footer-row">
+      <div class="footer-col">
+        <h4>Info</h4>
+        <ul class="links">
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Compressions</a></li>
+          <li><a href="#">Customers</a></li>
+          <li><a href="#">Service</a></li>
+          <li><a href="#">Collection</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Explore</h4>
+        <ul class="links">
+          <li><a href="#">Free Designs</a></li>
+          <li><a href="#">Latest Designs</a></li>
+          <li><a href="#">Themes</a></li>
+          <li><a href="#">Popular Designs</a></li>
+          <li><a href="#">Art Skills</a></li>
+          <li><a href="#">New Uploads</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul class="links">
+          <li><a href="#">Customer Agreement</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">GDPR</a></li>
+          <li><a href="#">Security</a></li>
+          <li><a href="#">Testimonials</a></li>
+          <li><a href="#">Media Kit</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Newsletter</h4>
+        <p>
+          Subscribe to our newsletter for a weekly dose
+          of news, updates, helpful tips, and
+          exclusive offers.
+        </p>
+        <div class="icons">
+          <i class="fa-brands fa-facebook-f"></i>
+          <i class="fa-brands fa-twitter"></i>
+          <i class="fa-brands fa-linkedin"></i>
+          <i class="fa-brands fa-github"></i>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+<!-- Copyright -->
+<footer class="copyright">
+  <div class="copyright-div">
+    <span>Travel Company | © 2024 All Rights Reserved</span>
+  </div>
+</footer>
+
+{% comment %} Termminals photos {% endcomment %}
+
+<script>
+  let slider = document.querySelector('.slider .list');
+  let items = document.querySelectorAll('.slider .list .item');
+  let next = document.getElementById('next');
+  let prev = document.getElementById('prev');
+  let dots = document.querySelectorAll('.slider .dots li');
+
+  let lengthItems = items.length - 1;
+  let active = 0;
+  next.onclick = function(){
+      active = active + 1 <= lengthItems ? active + 1 : 0;
+      reloadSlider();
+  }
+  prev.onclick = function(){
+      active = active - 1 >= 0 ? active - 1 : lengthItems;
+      reloadSlider();
+  }
+  let refreshInterval = setInterval(()=> {next.click()}, 3000);
+  function reloadSlider(){
+      slider.style.left = -items[active].offsetLeft + 'px';
+      // 
+      let last_active_dot = document.querySelector('.slider .dots li.active');
+      last_active_dot.classList.remove('active');
+      dots[active].classList.add('active');
+
+      clearInterval(refreshInterval);
+      refreshInterval = setInterval(()=> {next.click()}, 3000);
+
+      
+  }
+
+  dots.forEach((li, key) => {
+      li.addEventListener('click', ()=>{
+          active = key;
+          reloadSlider();
+      })
+  })
+  window.onresize = function(event) {
+      reloadSlider();
+  };
+
+
+</script>
+
+
+{% comment %} Cards {% endcomment %}
+<script>
+  const wrapper = document.querySelector(".wrapper");
+  const carousel = document.querySelector(".carousel");
+  const firstCardWidth = carousel.querySelector(".card").offsetWidth;
+  const arrowBtns = document.querySelectorAll(".wrapper i");
+  const carouselChildrens = [...carousel.children];
+
+  let isDragging = false, isAutoPlay = true, startX, startScrollLeft, timeoutId;
+
+  // Get the number of cards that can fit in the carousel at once
+  let cardPerView = Math.round(carousel.offsetWidth / firstCardWidth);
+
+  // Insert copies of the last few cards to beginning of carousel for infinite scrolling
+  carouselChildrens.slice(-cardPerView).reverse().forEach(card => {
+      carousel.insertAdjacentHTML("afterbegin", card.outerHTML);
+  });
+
+  // Insert copies of the first few cards to end of carousel for infinite scrolling
+  carouselChildrens.slice(0, cardPerView).forEach(card => {
+      carousel.insertAdjacentHTML("beforeend", card.outerHTML);
+  });
+
+  // Scroll the carousel at appropriate postition to hide first few duplicate cards on Firefox
+  carousel.classList.add("no-transition");
+  carousel.scrollLeft = carousel.offsetWidth;
+  carousel.classList.remove("no-transition");
+
+  // Add event listeners for the arrow buttons to scroll the carousel left and right
+  arrowBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+          carousel.scrollLeft += btn.id == "left" ? -firstCardWidth : firstCardWidth;
+      });
+  });
+
+  const dragStart = (e) => {
+      isDragging = true;
+      carousel.classList.add("dragging");
+      // Records the initial cursor and scroll position of the carousel
+      startX = e.pageX;
+      startScrollLeft = carousel.scrollLeft;
+  }
+
+  const dragging = (e) => {
+      if(!isDragging) return; // if isDragging is false return from here
+      // Updates the scroll position of the carousel based on the cursor movement
+      carousel.scrollLeft = startScrollLeft - (e.pageX - startX);
+  }
+
+  const dragStop = () => {
+      isDragging = false;
+      carousel.classList.remove("dragging");
+  }
+
+  const infiniteScroll = () => {
+      // If the carousel is at the beginning, scroll to the end
+      if(carousel.scrollLeft === 0) {
+          carousel.classList.add("no-transition");
+          carousel.scrollLeft = carousel.scrollWidth - (2 * carousel.offsetWidth);
+          carousel.classList.remove("no-transition");
+      }
+      // If the carousel is at the end, scroll to the beginning
+      else if(Math.ceil(carousel.scrollLeft) === carousel.scrollWidth - carousel.offsetWidth) {
+          carousel.classList.add("no-transition");
+          carousel.scrollLeft = carousel.offsetWidth;
+          carousel.classList.remove("no-transition");
+      }
+
+      // Clear existing timeout & start autoplay if mouse is not hovering over carousel
+      clearTimeout(timeoutId);
+      if(!wrapper.matches(":hover")) autoPlay();
+  }
+
+  const autoPlay = () => {
+      if(window.innerWidth < 800 || !isAutoPlay) return; // Return if window is smaller than 800 or isAutoPlay is false
+      // Autoplay the carousel after every 2500 ms
+      timeoutId = setTimeout(() => carousel.scrollLeft += firstCardWidth, 2500);
+  }
+  autoPlay();
+
+  carousel.addEventListener("mousedown", dragStart);
+  carousel.addEventListener("mousemove", dragging);
+  document.addEventListener("mouseup", dragStop);
+  carousel.addEventListener("scroll", infiniteScroll);
+  wrapper.addEventListener("mouseenter", () => clearTimeout(timeoutId));
+  wrapper.addEventListener("mouseleave", autoPlay);
+</script>
+
+
+
+{% comment %} Contact us  {% endcomment %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#contact-form").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'home' %}", // Update with the correct URL
+                    data: $(this).serialize(), // Serialize form data
+                    success: function (response) {
+                        // Show success message
+                        alert("Form submitted successfully!");
+                        $("#contact-form")[0].reset(); // Reset the form
+                    },
+                    error: function (xhr, errmsg, err) {
+                        // Handle errors if any
+                        console.log(xhr.status + ": " + xhr.responseText); // Log error message
+                    }
+                });
+            });
+        });
+    </script>
+
+{% endblock%}

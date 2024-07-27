@@ -1,0 +1,66 @@
+{% extends "base/base.html" %}
+{% block head %} | History {% endblock head %}
+
+{% block base %}
+
+<body>
+  <section>
+    <h2>All Reservations</h2>
+  </section>
+  <div>
+    {% for trip, reservations in reservations_by_trip.items %}
+    <section style="padding-left:50px; padding-right:50px;">
+      <section id="trip-table-{{ forloop.counter }}">
+        <h4>{{ trip.departure }} to {{ trip.destination }} <br>
+          {{ trip.departure_datetime }} to {{ trip.arrival_datetime }} <br>
+        </h4>
+        <table style="padding-left:50px; padding-right:50px;">
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>Name</th>
+              <th>Reservation No</th>
+              <th>Selected Seats</th>
+              <th>Date Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for reservation in reservations %}
+            <tr>
+              <td>{{ reservation.user }} </td> 
+              <td>{{ reservation.name }}</td>
+              <td>{{ reservation.reservation_number }}</td>
+              <td>{{ reservation.selected_seats }}</td>
+              <td>{{ reservation.date_created }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+      <button
+        onclick="downloadPDF('trip-table-{{ forloop.counter }}', '{{ trip.departure }}', '{{ trip.departure_datetime }}', '{{ trip.destination }}')">Download
+        PDF</button>
+    </section>
+    {% endfor %}
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.3/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <script>
+    function downloadPDF(tableId, departureCity, departureDate, destinationCity) {
+      const tripTable = document.getElementById(tableId);
+      const filename = `${departureCity}_to_${destinationCity}-${departureDate}_at_reservations.pdf`; //file name
+      const opt = {
+        margin: 1,
+        filename: filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } // orientation
+      };
+      html2pdf().from(tripTable).set(opt).save();
+    }
+</script>
+
+
+</body>
+{% endblock base %}

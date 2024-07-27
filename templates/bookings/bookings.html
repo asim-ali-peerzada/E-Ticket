@@ -1,0 +1,33 @@
+{% extends "base/extension.html" %} <br />
+{% block head %}
+{% if is_employee %} | Employee Pannel{% else %} | Bookings 
+{%endif %} {% endblock head %} <br />
+
+{% block extension %} {% if is_employee %}
+<header class="banner" id="home">
+  <div class="banner__contents">
+    <h5 class="banner__title">Employe Pannel | {{ first_name }}</h5>
+    <div class="banner__buttons">
+      <a href="{% url 'reservation_history' %}" class="banner__button">Reservation History</a>
+      <a href="{% url 'manage_trip' %}" class="banner__button">Manage Trips</a>
+    </div>
+    <h3 class="banner__description">
+      We offer a seamless and user-friendly ticket booking experience for all your travel needs. Our modern fleet of buses and extensive network ensure you can travel comfortably and safely to your destination.
+    </h3>
+  </div>
+</header>
+{% else %}
+<header class="banner" id="home">
+  <div class="banner__contents">
+    <h5 class="banner__title">Welcome {{ first_name }} !</h5>
+    <div class="banner__buttons">
+      <a href="{% url 'dashboard' %}" class="banner__button">Dashboard</a>
+      <a href="{% url 'search_trips' %}" class="banner__button">Search Trip</a>
+    </div>
+    <h3 class="banner__description">
+      We offer a seamless and user-friendly ticket booking experience for all your travel needs. Our modern fleet of buses and extensive network ensure you can travel comfortably and safely to your destination.
+    </h3>
+    </div>
+</header>
+{% endif %}
+{% endblock extension %}

@@ -1,0 +1,17 @@
+{% extends "base/base.html" %}
+{% block base %}
+<div class="content">
+  <h1>Update Trip</h1>
+  <form method="post">
+    {% csrf_token %}
+    <div class="trip-form">
+      {{ form.fare.label_tag }}
+      {{ form.fare }}
+      {{ form.fare.errors }}
+      <button type="submit">Update Trip</button> <br>
+    </div>
+  </form>
+  <a href="{% url 'manage_trip' %}">Back to Manage Trips</a>
+</div>
+
+{% endblock base %}

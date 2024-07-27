@@ -1,0 +1,294 @@
+{% extends "base/base.html" %} {% block head %} | Reserve Seat {% endblock head %}
+
+{% block base %}
+<style>
+  form{
+    width: fit-content;
+    border-radius: 10px;
+    border: 3px rgba(26, 224, 195, 0.478);
+    background: linear-gradient(to top, rgba(61, 230, 204, 0.478), rgba(85, 221, 85, 0.467));
+    margin: auto;
+    margin-bottom: 100px;
+    margin-top: 100px;
+    padding: 30px;
+  }
+  
+input[type="text"] {
+  width: 170px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-bottom: 5px;
+  margin-top: 20px;
+  box-sizing: border-box;
+}
+  /* Style the checkbox */
+  input[type="checkbox"] {
+      /* Increase the size of the checkbox */
+      width: 20px; /* Adjust width as needed */
+      height: 20px; /* Adjust height as needed */
+  }
+  
+  /* Style the label as the number box */
+  label {
+      display: inline-block;
+      width: 80px; /* Adjust width as needed */
+      height: 30px; /* Adjust height as needed */
+      text-align: center; /* Center the text */
+      line-height: 30px; /* Center the text vertically */
+      margin-right: 10px; /* Adjust margin as needed */
+      font-size: 19px; /* Adjust font size as needed */
+      color: #333; /* Text color */
+      position: relative;
+      z-index: 1;
+  }
+  
+  .pair-row {
+    margin: 40px;
+    display: flex;
+    flex-direction: row;
+  }
+  .back-seats{
+    display: flex;
+    flex-direction: row;
+  }
+
+  .seat{
+    border-radius: 5px;
+    padding: 10px;
+    margin: 5px;
+  }
+
+  .seat:nth-child(even){
+    margin-right: 100px;
+    background: linear-gradient(to left, rgba(61, 230, 204, 0.478), rgba(85, 221, 85, 0.467));
+  }
+
+  .seat:nth-child(odd){
+    margin-left: 100px;
+    background: linear-gradient(to right, rgba(61, 230, 204, 0.478), rgba(85, 221, 85, 0.467));
+  }
+
+  .back-seat{
+    border-radius: 5px;
+    background: linear-gradient(to bottom, rgba(61, 230, 204, 0.478), rgba(85, 221, 85, 0.467));
+    padding: 10px;
+    margin : auto;
+    align-items: center;
+  }
+
+  button{
+    border: 3px rgba(61, 230, 204, 0.478);
+    border-radius: 5px;
+    background-color: orange;
+    margin-top: 50px;
+    margin-bottom: 10px;
+    margin-left: 15px;
+    font-size: x-large;
+    padding: 10px;
+  }
+  @media only screen and (max-width: 768px) {
+    form {
+      width: 100%; /* Set the maximum width of the form to 90% of the viewport width */
+      max-width: 400px; /* Set a maximum width to prevent the form from becoming too wide */
+      margin: auto; /* Center the form horizontally */
+      padding: 20px; /* Adjust padding for smaller screens */
+    }
+
+    .seat-container{
+      margin-left: 15px;
+    }
+
+    .pair-row {
+      margin: 20px; /* Adjust margin for smaller screens */
+    }
+
+    .back-seats {
+      margin-top: 20px; /* Adjust margin for smaller screens */
+    }
+    label{
+      font-size: 8px;
+      width: 33px;
+      height: 10px;
+    }
+
+    .seat {
+      margin: 5px; /* Adjust margin for smaller screens */
+      padding: 0;
+    }
+    input[type="checkbox"]{
+      width: 8px;
+      height: 8px;
+    }
+
+    .seat:nth-child(even),
+    .seat:nth-child(odd) {
+      margin-right: 10px; /* Remove right margin for smaller screens */
+      margin-left: 10px; /* Remove left margin for smaller screens */
+    }
+
+    .back-seats{
+      margin-left: 10px;
+    }
+
+    .back-seat {
+      padding: 0;
+      margin: 5px;
+    }
+
+    button {
+      margin-top: 20px; /* Adjust margin for smaller screens */
+      font-size: small;
+      padding: 5px;
+    }
+  }
+
+
+  </style>
+<body>
+  <section class="book-ticket-container">
+    <h1>{{trip.departure}} to {{trip.destination}}</h1>
+    <div class="card">
+      <div class="card-body">
+        <p>Departure: {{ trip.departure }}</p>
+        <p>Destination: {{ trip.destination }}</p>
+        <p>Departure Time: {{ trip.departure_datetime }}</p>
+        <p>Arrival Time: {{ trip.arrival_datetime }}</p>
+        <p>Fare: {{ trip.fare }}</p>
+        <p>Total Seats: {{ trip.total_seats }}</p>
+        <p>Available Seats: {{ trip.available_seats }}</p>
+      </div>
+    </div>
+  </section>
+
+  <form method="post" id="reservationForm">
+    {% csrf_token %} {{ form.non_field_errors }} {% for field in form %}
+    {% if field.name != "selected_seats" %}
+    <div class="fieldWrapper">
+      {{ field.label_tag }} {{ field }} {{ field.errors }}
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <div id="seatSelection" class="seat-container"></div>
+    <input
+      type="hidden"
+      name="selected_seats"
+      id="selectedSeatsInput"
+      style="display: none !important"
+    />
+
+    <button type="submit">Create Reservation</button>
+  </form>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the total seats from the trip model
+        var totalSeats = {{ trip.total_seats }};
+        var seatContainer = document.getElementById('seatSelection');
+
+        // Retrieve the initially selected seats from the server and split into an array
+        var initiallySelectedSeatsString = "{{ selected_seats }}";
+        // Regular expression to match all numbers
+        var regex = /\b\d+\b/g;
+        var initiallySelectedSeats = initiallySelectedSeatsString.match(regex);
+    
+        // Store the initially selected seats as a set for efficient comparison
+        var initiallySelectedSet = new Set(initiallySelectedSeats);
+    
+        // Create a counter to keep track of the number of checkboxes created
+        var checkboxCounter = 0;
+    
+        // Dynamically generate the selectable boxes
+        for (var i = 1; i <= totalSeats; i++) {
+          var checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.id = 'seat_' + i;
+          checkbox.name = 'selected_seats';
+          checkbox.value = i;
+  
+          var label = document.createElement('label');
+          label.htmlFor = 'seat_' + i;
+          label.appendChild(document.createTextNode('Seat ' + i));
+
+          // Check if the seat is initially selected and mark the checkbox accordingly
+          if (initiallySelectedSet.has(i.toString())) {
+              checkbox.checked = true;
+              checkbox.disabled = true; // Disable the checkbox for already selected seat
+          }
+  
+          // Append checkbox and label to the seatContainer
+          var seatDiv = document.createElement('div');
+          seatDiv.className = 'seat';
+          seatDiv.appendChild(checkbox);
+          seatDiv.appendChild(label);
+  
+          // Append seatDiv to the seatContainer
+          if (i <= 44) {
+              if (checkboxCounter % 4 === 0) {
+                  var pairRowDiv = document.createElement('div');
+                  pairRowDiv.className = 'pair-row';
+                  seatContainer.appendChild(pairRowDiv);
+              }
+              seatContainer.lastChild.appendChild(seatDiv);
+          } else {
+                // Create the 'backSeats' div if it doesn't exist
+                if (!document.getElementById('backSeats')) {
+                    var backSeatsDiv = document.createElement('div');
+                    backSeatsDiv.id = 'backSeats';
+                    backSeatsDiv.className = 'back-seats'
+                    seatContainer.appendChild(backSeatsDiv);
+                }
+                // Append seatDiv to the 'backSeats' div for seats after the first 44
+                seatDiv.className = 'back-seat'; 
+                document.getElementById('backSeats').appendChild(seatDiv);
+            }
+  
+          // Increment the checkbox counter
+          checkboxCounter++;
+      }
+      // Reverse the order of seats in each pair row
+      var pairRows = document.querySelectorAll('.pair-row');
+      pairRows.forEach(function(row) {
+          var seats = row.querySelectorAll('.seat');
+          var reversedSeats = Array.from(seats).reverse();
+          row.innerHTML = '';
+          reversedSeats.forEach(function(seat) {
+              row.appendChild(seat);
+          });
+      });
+      // Reverse Back Seats
+      var backSeats = document.getElementById('backSeats');
+      if (backSeats) {
+          var backSeatsArray = Array.from(backSeats.querySelectorAll('.back-seat'));
+          var reversedBackSeats = backSeatsArray.reverse();
+          backSeats.innerHTML = '';
+          reversedBackSeats.forEach(function(seat) {
+              backSeats.appendChild(seat);
+          });
+      }
+    
+        // Add an event listener to the form for submission
+        document.getElementById('reservationForm').addEventListener('submit', function(event) {
+            // Get all selected checkboxes
+            var selectedCheckboxes = document.querySelectorAll('input[name="selected_seats"]:checked');
+            // Extract values from newly selected checkboxes
+            var newlySelectedSeatsArray = Array.from(selectedCheckboxes).map(function(checkbox) {
+                return checkbox.value;
+            });
+
+            // Remove initially selected seats from newly selected seats
+            var newlySelectedSeatsSet = new Set(newlySelectedSeatsArray);
+            var finalSelectedSeatsArray = newlySelectedSeatsArray.filter(function(seat) {
+                return !initiallySelectedSet.has(seat);
+            });
+
+            // Set the value of the hidden input field with only newly selected seats
+            document.getElementById('selectedSeatsInput').value = finalSelectedSeatsArray.join(',');
+        });
+    });
+    </script>
+
+</body>
+
+{% endblock base %}

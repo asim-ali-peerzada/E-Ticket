@@ -1,0 +1,10 @@
+
+<section>
+  <h1>Update Reservation</h1>
+  <form method="post">
+    {% csrf_token %} {{ form.as_p }}
+    <button type="submit">Update Reservation</button>
+  </form>
+  <a href="{% url 'trip_detail' trip_id=reservation.trip.id %}">
+    <br />Back to Manage Reservation</a>
+</section>

@@ -1,0 +1,80 @@
+<style>
+  /* Add this to your existing CSS file or in a <style> tag in your HTML file */
+
+  /* Style for the form section */
+  .delete-trip-container {
+    max-width: 400px;
+    align-items: center;
+    margin: 5rem auto 0;
+    /* Add margin-top: 5rem and margin-bottom: 0 */
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Style for the form heading */
+  .delete-trip-container h1 {
+    color: #333;
+    text-align: center;
+    padding-bottom: 1rem;
+  }
+  h1 {
+    text-align: center;
+    font-size: xx-large;
+  }
+
+  /* Style for the paragraph */
+  .delete-trip-container p {
+    color: #555;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Style for the form */
+  .delete-trip-container form {
+    display: flex;
+    justify-content: center;
+  }
+
+  /* Style for the submit button */
+  .delete-trip-container form button {
+    padding: 10px;
+    background-color: #d9534f;
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .delete-trip-container form button:hover {
+    background-color: #c9302c;
+  }
+
+  /* Style for the 'Cancel' link */
+  .delete-trip-container a {
+    display: block;
+    text-align: center;
+    margin-top: 1rem;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .delete-trip-container a:hover {
+    color: #d9534f;
+  }
+</style>
+
+<section class="delete-trip-container">
+  <h1>Delete Reservation</h1>
+  <p>
+    Are you sure you want to delete the Reservation of "{{ reservation.name }}
+    from {{ reservation.trip }}"?
+  </p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Yes, delete</button>
+  </form>
+  <a href="{% url 'trip_detail' trip_id=reservation.trip.id %}">Cancel</a>
+</section>

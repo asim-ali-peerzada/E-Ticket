@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Travel Company {% block head %} {% endblock head %}</title>
+    
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    
+    <link rel="stylesheet" href="/static/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/boxicons@latest/css/boxicons.min.css" rel="stylesheet" />
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="content">
+        {% if is_authenticated %}
+        <div class="logo"><a href="{% url "bookings" %}">Travel Company</a></div>
+        {% else %}
+        <div class="logo"><a href="{% url "home" %}">Travel Company</a></div>
+        {% endif %}
+        <ul class="menu-list">
+          <div class="icon cancel-btn">
+            <i class="fas fa-times"></i>
+          </div>
+          {% if is_employee %}
+          <li><a href="{% url 'manage_trip' %}">All Trips</a></li>
+          {% endif %}
+          {% if request.path != '/bookings/manage_trip/' %} <!-- Exclude specific path -->
+          {% if request.path != '/bookings/reservation_history/' %}
+          {% if request.path != '/bookings/dashboard/' %}
+          <li><a href="#terminals">Our Terminals</a></li>
+          <li><a href="#about-us">About Us</a></li>
+          <li><a href="#contact-us">Contact Us</a></li>
+          {% endif %}
+          {% endif %}
+          {% endif %}
+          {% if  not is_authenticated %}
+          <li><a href="{% url 'custom_login' %}" class="nav-account">Login</a></li>
+          {% endif %}
+          {% if is_authenticated %}
+          <li><a href="{% url 'home' %}" class="nav-account">Logout</a></li>
+          {% endif %}
+        </ul>
+        <div class="icon menu-btn">
+        </div>
+      </div>
+    </nav>
+    {% block base %}
+    
+    {% endblock base %}
+
+    <script>
+      const body = document.querySelector("body");
+      const navbar = document.querySelector(".navbar");
+      const menu = document.querySelector(".menu-list");
+      const menuBtn = document.querySelector(".menu-btn");
+      const cancelBtn = document.querySelector(".cancel-btn");
+      menuBtn.onclick = ()=>{
+        menu.classList.add("active");
+        menuBtn.classList.add("hide");
+        cancelBtn.classList.add("show");
+        body.classList.add("disabledScroll");
+      }
+      cancelBtn.onclick = ()=>{
+        menu.classList.remove("active");
+        menuBtn.classList.remove("hide");
+        cancelBtn.classList.remove("show");
+        body.classList.remove("disabledScroll");
+      }
+  
+      window.onscroll = ()=>{
+        this.scrollY > 20 ? navbar.classList.add("sticky") : navbar.classList.remove("sticky");
+      }
+
+            // Accessing the element by ID
+      const homeElement = document.getElementById('home');
+
+      // Now you can manipulate or access the content within this element
+      console.log(homeElement.innerHTML); // Accessing inner HTML content
+
+
+          // Get the modal element
+    var modal = document.getElementById("logoutModal");
+
+    // Get the button that opens the modal
+    var logoutBtn = document.getElementById("logoutBtn");
+
+    // Get the <span> element that closes the modal
+    var cancelLogoutBtn = document.getElementById("cancelLogout");
+
+    // When the user clicks the button, open the modal
+    logoutBtn.onclick = function() {
+      modal.style.display = "block";
+    }
+
+    // When the user clicks on <span> (x), close the modal
+    cancelLogoutBtn.onclick = function() {
+      modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    // When the user confirms logout, perform logout action
+    document.getElementById("confirmLogout").onclick = function() {
+      // Perform logout action here, such as redirecting to logout URL
+      window.location.href = "{% url 'logout' %}";
+    }
+    </script>
+
+
+  </body>
+</html>

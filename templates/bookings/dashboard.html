@@ -1,0 +1,60 @@
+{% extends "base/base.html" %} {% block head %} | Dashboard {% endblock head %}
+
+{% block base %}
+
+
+
+<div class="dash_container">
+  <div class="sidebar">
+    <header class="header">
+      <h7 class="dash_head">Dashboard</h7>
+      <ul class="dash_bar">
+        <li><a href="{% url 'dashboard' %}">History</a></li>
+        <li><a href="">Account Verification</a></li>
+        <li><a href="">Account Passwords</a></li>
+    </header>
+  </div>
+  <main class="main-content">
+    <h1 class="dash_name">{{ first_name }}'s Reservation History</h1>
+    <div class="cards-container">
+      {% if user_reservations %}
+      {% for reservation in user_reservations %}
+      <div class="card">
+        <div class="card-head">
+          <h3>{{reservation.trip.departure}} to {{reservation.trip.destination}}</h3>
+        </div>
+        <div class="card-body">
+          <p class="data"> Name : {{reservation.name}}</p>
+          <p class="data">Reservation No : {{reservation.reservation_number}}</p>
+          <p class="data">Trip : {{reservation.trip.departure}} to {{reservation.trip.destination}}</p>
+          <p class="data">Departure: {{reservation.trip.departure_datetime}}</p>
+          <p class="data">Arrival : {{reservation.trip.arrival_datetime}}</p>
+          <p class="data">Created at: {{reservation.date_created}}</p>
+          <p class="data">Seats : {{reservation.selected_seats}}</p>
+          {% if reservation.is_deletable %}
+          <a href="{% url 'delete_reservations_customer' reservation_id=reservation.reservation_number %}"
+            class="delete-link">Delete</a>
+          {% else %}
+          <a class="completed">Completed</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="card">
+      <div class="card-head">
+        <h3> No Reservations Yet</h3>
+      </div>
+      <div class="card-body">
+        <p class="data"> Please Search Your Desired Trip</p>
+        <a href="{% url 'search_trips' %}" class="completed">Search Trip</a>
+      </div>
+    </div>
+    {% endif %}
+  </main>
+</div>
+
+
+
+{% endblock base %}

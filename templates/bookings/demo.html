@@ -1,0 +1,159 @@
+{% extends "base/base.html" %} {% block head %} | Dashboard {% endblock head %}
+
+{% block base %}
+<style>
+/* Style the checkbox */
+input[type="checkbox"] {
+    /* Increase the size of the checkbox */
+    width: 20px; /* Adjust width as needed */
+    height: 20px; /* Adjust height as needed */
+    margin-right: 10px; /* Adjust margin as needed */
+}
+
+/* Style the label as the number box */
+label {
+    display: inline-block;
+    width: 80px; /* Adjust width as needed */
+    height: 30px; /* Adjust height as needed */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 5px; /* Rounded corners */
+    text-align: center; /* Center the text */
+    line-height: 30px; /* Center the text vertically */
+    background-color: #fff; /* Background color */
+    margin-right: 10px; /* Adjust margin as needed */
+    font-size: 14px; /* Adjust font size as needed */
+    font-weight: bold; /* Make the text bold */
+    color: #333; /* Text color */
+    /* Show label text inside the box */
+    position: relative;
+    z-index: 1;
+}
+
+/* Add margin between rows */
+.pair-row {
+  margin: 40px; /* Adjust margin as needed */
+}
+
+</style>
+<body>
+  <section class="book-ticket-container">
+    <h1>{{trip.departure}} to {{trip.destination}}</h1>
+
+    <div class="card">
+      <div class="card-body">
+        <p>Departure: {{ trip.departure }}</p>
+        <p>Destination: {{ trip.destination }}</p>
+        <p>Departure Time: {{ trip.departure_datetime }}</p>
+        <p>Arrival Time: {{ trip.arrival_datetime }}</p>
+        <p>Total Seats: {{ trip.total_seats }}</p>
+        <p>Available Seats: {{ trip.available_seats }}</p>
+      </div>
+    </div>
+  </section>
+
+  <form method="post" id="reservationForm">
+    {% csrf_token %} {{ form.non_field_errors }} {% for field in form %}
+    {% if field.name != "selected_seats" %}
+    <div class="fieldWrapper">
+      {{ field.label_tag }} {{ field }} {{ field.errors }}
+    </div>
+    {% endif %}
+    {% endfor %}
+
+    <div id="seatSelection"></div>
+    <input
+      type="hidden"
+      name="selected_seats"
+      id="selectedSeatsInput"
+      style="display: none !important"
+    />
+
+    <button type="submit">Create Reservations</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the total seats from the trip model
+        var totalSeats = {{ trip.total_seats }};
+        var seatContainer = document.getElementById('seatSelection');
+    
+        // Retrieve the initially selected seats from the server and split into an array
+        var initiallySelectedSeatsString = "{{ selected_seats }}";
+        var initiallySelectedSeats = initiallySelectedSeatsString.replace(/\s/g, '').match(/\d+/g);
+    
+        // Store the initially selected seats as a set for efficient comparison
+        var initiallySelectedSet = new Set(initiallySelectedSeats);
+    
+        // Create a counter to keep track of the number of checkboxes created
+        var checkboxCounter = 0;
+    
+        // Dynamically generate the selectable boxes
+        for (var i = 1; i <= totalSeats; i++) {
+            var checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'seat_' + i;
+            checkbox.name = 'selected_seats';
+            checkbox.value = i;
+    
+            var label = document.createElement('label');
+            label.htmlFor = 'seat_' + i;
+            label.appendChild(document.createTextNode('Seat ' + i));
+
+            
+            // Apply CSS styles to checkbox and 
+    
+            // Check if the seat is initially selected and mark the checkbox accordingly
+            if (initiallySelectedSet.has(i.toString())) {
+                checkbox.checked = true;
+                checkbox.disabled = true; // Disable the checkbox for already selected seat
+            }
+    
+            // Append checkbox and label to the seatContainer
+            if (i <= 44) {
+                // For the first 44 seats, arrange them in pairs side by side
+                if (checkboxCounter % 2 === 0) {
+                    // Create a new row for every even-numbered checkbox
+                    var pairRow = document.createElement('div');
+                    pairRow.className = 'pair-row';
+                    seatContainer.appendChild(pairRow);
+                }
+    
+                var pairRow = document.querySelectorAll('.pair-row')[Math.floor(checkboxCounter / 4)];
+                pairRow.appendChild(checkbox);
+                pairRow.appendChild(label);
+            } else {
+                // For seats beyond the first 44, append them to the seatContainer directly
+                seatContainer.appendChild(checkbox);
+                seatContainer.appendChild(label);
+            }
+    
+            // Increment the checkbox counter
+            checkboxCounter++;
+        }
+    
+        // Add an event listener to the form for submission
+        document.getElementById('reservationForm').addEventListener('submit', function(event) {
+            // Get all selected checkboxes
+            var selectedCheckboxes = document.querySelectorAll('input[name="selected_seats"]:checked');
+    
+            // Extract values from newly selected checkboxes
+            var newlySelectedSeatsArray = Array.from(selectedCheckboxes).map(function(checkbox) {
+                return checkbox.value;
+            });
+
+            // Remove initially selected seats from newly selected seats
+            var newlySelectedSeatsSet = new Set(newlySelectedSeatsArray);
+            var finalSelectedSeatsArray = newlySelectedSeatsArray.filter(function(seat) {
+                return !initiallySelectedSet.has(seat);
+            });
+
+            // Set the value of the hidden input field with only newly selected seats
+            document.getElementById('selectedSeatsInput').value = finalSelectedSeatsArray.join(',');
+            
+        });
+    });
+    </script>
+    
+</body>
+
+{% endblock base %}

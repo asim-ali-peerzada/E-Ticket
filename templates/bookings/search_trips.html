@@ -1,0 +1,21 @@
+{% extends "base/extension.html" %}
+{% block head %} | Search Trips {% endblock head %} 
+
+{% block extension %}
+
+<div class="search-container">
+  <h1>Search Trips</h1>
+  <div class="search-trips-form">
+    {% csrf_token %}
+    <form method="post" action="{% url 'search_trips' %}" class="search-form">
+      {% csrf_token %} {% include "base/alert.html" %} {{ form.non_field_errors }}
+      {{ form.departure_city.label_tag }} {{form.departure_city}}
+      {{form.destination_city.label_tag }} {{form.destination_city}}
+      {{form.departure_date.label_tag}} {{form.departure_date}}
+
+      <button type="submit">Search</button>
+    </form>
+  </div>
+</div>
+
+{% endblock extension %}
